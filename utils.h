@@ -1,35 +1,50 @@
-#ifndef __UTILS_H__
-#define __UTILS_H__
+#include <stdlib.h>
+#include <stdio.h>
+#include "hasse.h"
 
-typedef struct s_cell
+
+void removeTransitiveLinks(t_link_array *p_link_array)
 {
-    int dest;
-    float proba;
-    struct s_cell *next;
-} t_cell;
-
-typedef struct s_list
-{
-    t_cell *head;
-} t_list;
-
-
-typedef struct s_adj_list
-{
-    int nb_vertices;
-    t_list *array;
-} t_adj_list;
-
-
-t_cell *create_cell(int dest, float proba);
-t_list create_empty_list(void);
-void add_cell_to_list(t_list *p_list, int dest, float proba);
-void print_list(const t_list *p_list);
-t_adj_list create_empty_adj_list(int nb_vertices);
-t_adj_list readGraph(const char *filename);
-void print_adj_list(const t_adj_list *p_adj);
-int check_markov(const t_adj_list *p_adj);
-void write_mermaid_file(const t_adj_list *p_adj, const char *filename);
-void free_adj_list(t_adj_list *p_adj);
-
-#endif
+    int i = 0;
+    while (i < p_link_array->log_size)
+    {
+        t_link link1 = p_link_array->links[i];
+        int j = 0;
+        int to_remove = 0;
+        while (j < p_link_array->log_size && !to_remove)
+        {
+            if (j != i)
+            {
+                t_link link2 = p_link_array->links[j];
+                if (link1.from == link2.from)
+                {
+                    // look for a link from link2.to to link1.to
+                    int k = 0;
+                    while (k < p_link_array->log_size && !to_remove)
+                    {
+                        if (k != j && k != i)
+                        {
+                            t_link link3 = p_link_array->links[k];
+                            if ((link3.from == link2.to) && (link3.to == link1.to))
+                            {
+                                to_remove = 1;
+                            }
+                        }
+                        k++;
+                    }
+                }
+            }
+            j++;
+        }
+        if (to_remove)
+        {
+            // remove link1 by replacing it with the last link
+            p_link_array->links[i] = p_link_array->links[p_link_array->log_size - 1];
+            p_link_array->log_size--;
+        }
+        else
+        {
+            i++;
+        }
+    }
+}
