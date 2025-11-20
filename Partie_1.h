@@ -1,7 +1,3 @@
-//
-// Created by Paul Girault on 20/10/2025.
-//
-
 #ifndef PARTIE_1_H
 #define PARTIE_1_H
 
@@ -50,7 +46,7 @@ void verifier_markov(liste_adjacence G);
 
 // question 5 - export Mermaid
 
-// génération d'un identifiant de sommet de type A, B, ..., Z, AA, AB, ...
+// génération d'un identifiant de sommet de type A, B, AA, AB, etc
 char *getId(int num);
 
 // export du graphe au format Mermaid (.mmd)

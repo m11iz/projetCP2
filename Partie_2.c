@@ -2,11 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Macro simple pour trouver le minimum
+
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 // IMPLÉMENTATION UTILS POUR PILE
-
 
 t_pile* creer_pile(int capacite_initiale) {
     t_pile *p = malloc(sizeof(t_pile));
@@ -116,7 +115,7 @@ void ajouter_classe_partition(t_partition *p, t_classe nouvelle_classe) {
     p->nb_classes++;
 }
 
-// Affiche la partition (Validation Étape 1)
+// Affiche la partition (verif Étape 1)
 void afficher_partition(t_partition p) {
     printf("\n=== Partition du graphe (Algorithme de Tarjan) ===\n");
     for (int i = 0; i < p.nb_classes; i++) {
@@ -231,7 +230,6 @@ t_partition algorithme_tarjan(liste_adjacence G) {
         }
     }
 
-    // Nettoyage
     free(data);
     liberer_pile(pile);
 

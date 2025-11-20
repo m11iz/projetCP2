@@ -1,7 +1,3 @@
-//
-// Created by Paul Girault on 20/10/2025.
-//
-
 #include "Partie_1.h"
 #include <string.h>
 
@@ -144,7 +140,7 @@ char *getId(int num) {
 
     char *id = malloc((len + 1) * sizeof(char));
     if (!id) {
-        perror("Erreur d'allocation mémoire dans getId");
+        perror("Erreur d'allocation dans getId");
         exit(EXIT_FAILURE);
     }
 
