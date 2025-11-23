@@ -2,23 +2,8 @@
 #include "Partie_2.h"
 #include "matrix.h"
 #include <string.h>
-#include <limits.h>
-#include <stdio.h> // Redondant mais s'assurer des headers pour FILE*
+#include <stdio.h>
 
-// =========================================================
-// FONCTION UTILITAIRE D'EXPORT POUR LE TRACÉ (Question 1.b)
-// =========================================================
-
-/**
- * @brief Exporte une ligne de la matrice de transition M^n vers un fichier CSV.
- * Cette ligne représente la distribution Pi(n) = Pi(0) * M^n pour un départ donné.
- *
- * @param n Le numéro du pas (étape).
- * @param M_power_n La matrice de transition P^n.
- * @param start_state_index L'indice de la ligne à exporter (0-indexé), correspondant à l'état de départ.
- * @param filepath Le chemin du fichier d'export (e.g., "Pi_A_n_data.csv").
- * @param append_mode 0 pour créer/écraser le fichier et écrire l'en-tête, 1 pour ajouter.
- */
 void exportDistributionRow(int n, t_matrix M_power_n, int start_state_index, const char *filepath, int append_mode) {
     // Le mode "w" pour le premier appel (écrire l'en-tête), "a" pour les suivants
     FILE *file = fopen(filepath, append_mode ? "a" : "w");
@@ -37,7 +22,7 @@ void exportDistributionRow(int n, t_matrix M_power_n, int start_state_index, con
     if (!append_mode) {
         fprintf(file, "Etape");
         for (int j = 0; j < M_power_n.rows; j++) {
-            fprintf(file, ",P(Xn=%d)", j + 1); // P(Xn=1), P(Xn=2), ...
+            fprintf(file, ",P(Xn=%d)", j + 1);
         }
         fprintf(file, "\n");
     }
@@ -47,7 +32,6 @@ void exportDistributionRow(int n, t_matrix M_power_n, int start_state_index, con
 
     // Écrire les probabilités pour la ligne correspondant à l'état de départ
     for (int j = 0; j < M_power_n.rows; j++) {
-        // Utilisation de .10f pour plus de précision (10 décimales)
         fprintf(file, ",%.10f", M_power_n.data[start_state_index][j]);
     }
     fprintf(file, "\n");
@@ -55,15 +39,11 @@ void exportDistributionRow(int n, t_matrix M_power_n, int start_state_index, con
     fclose(file);
 }
 
-
-// =========================================================
-// FONCTION PRINCIPALE main()
-// =========================================================
 int main() {
     int choix;
     liste_adjacence G;       // structure du graphe
-    int graphe_charge = 0;   // drapeau pour savoir si un graphe est déjà chargé
-    char chemin[256];        // pour stocker le chemin du fichier
+    int graphe_charge = 0;
+    char chemin[256];
 
     // Pour stocker les résultats des Parties 2 et 3
     t_partition partition;
@@ -75,9 +55,7 @@ int main() {
     int matrice_chargee = 0;
 
     do {
-        printf("\n==================================\n");
         printf("     PROJET GRAPHES DE MARKOV\n");
-        printf("==================================\n");
         printf("--- Partie 1 ---\n");
         printf("1. Charger un graphe depuis un fichier\n");
         printf("2. Afficher la liste d'adjacence\n");
@@ -103,15 +81,12 @@ int main() {
             int c;
             while ((c = getchar()) != '\n' && c != EOF);
         } else {
-            // Saisie valide, consomme le \n restant
             getchar();
         }
-        // --- FIN GESTION DE LA SAISIE ---
+
 
         switch (choix) {
             case 1: {
-                // NOTE: Utilisez le chemin relatif vers votre fichier de graphe 27 états.
-                // Ex: ../Data/votre_fichier_27_etats.txt
                 printf("\nEntrez le chemin du fichier à charger (ex: ../data/meteo.txt) : ");
                 fgets(chemin, sizeof(chemin), stdin);
                 chemin[strcspn(chemin, "\n")] = '\0';
@@ -134,7 +109,7 @@ int main() {
 
             case 2:
                 if (!graphe_charge) {
-                    printf("\n⚠️  Aucun graphe n'est chargé. Utilisez l'option 1 d'abord.\n");
+                    printf("\n⚠️  Aucun graphe est chargé. Utilisez l'option 1 d'abord.\n");
                 } else {
                     printf("\n=== Liste d'adjacence du graphe ===\n");
                     for (int i = 0; i < G.taille; i++) {
@@ -164,7 +139,7 @@ int main() {
                 fichier_mmd[strcspn(fichier_mmd, "\n")] = '\0';
 
                 if (strlen(fichier_mmd) == 0) {
-                    printf("\n⚠️  Nom de fichier vide, génération annulée.\n");
+                    printf("\n⚠️  Nom de fichier vide.\n");
                     break;
                 }
 
@@ -225,7 +200,6 @@ int main() {
                 }
                 break;
 
-                // --- NOUVEAU CASE 5 (Partie 3) - Calcul P^n et Export CSV ---
             case 5: {
                 if (!graphe_charge) {
                     printf("\n⚠️  Aucun graphe n'est chargé. Utilisez l'option 1 d'abord.\n");
@@ -237,13 +211,11 @@ int main() {
                     matrice_chargee = 1;
                 }
 
-                // --- PARAMÈTRES POUR LA QUESTION 1 (Départ État 2) ---
-                // Ces paramètres sont facilement modifiables pour les questions 4, 5, 6, 7
-                const int START_STATE = 2; // État de départ (1-indexé)
-                const int START_ROW_INDEX = START_STATE - 1; // Ligne dans la matrice (0-indexé)
+                const int START_STATE = 2;
+                const int START_ROW_INDEX = START_STATE - 1;
                 const char *EXPORT_FILENAME = "Pi_A_n_data.csv";
-                const int MAX_PLOT_STEPS = 50; // Nombre de pas pour le tracé (suffisant pour la convergence)
-                // ----------------------------------------------------
+                const int MAX_PLOT_STEPS = 50;
+
 
 
                 printf("\n=== Calcul de la convergence et Exportation ===\n");
@@ -251,7 +223,7 @@ int main() {
                 displayMatrix(M);
                 printf("\nDépart: État %d. Exportation de Pi(n) vers '%s' pour n=1 à %d...\n", START_STATE, EXPORT_FILENAME, MAX_PLOT_STEPS);
 
-                // M_curr stockera P^n, M_prev stockera P^(n-1)
+                // M_curr stocke P^n, M_prev stocker P^(n-1)
                 t_matrix M_curr = createTransitionMatrix(G); // Commence à P^1
                 t_matrix M_prev = createEmptyMatrix(G.taille);
                 t_matrix M_next = createEmptyMatrix(G.taille); // Pour stocker P^(n+1)
@@ -260,39 +232,26 @@ int main() {
                 float diff = 100.0f;
                 int n = 1;
 
-                // --- EXPORT DE L'ÉTAPE n=1 ---
-                // M_curr est P^1. La ligne 'START_ROW_INDEX' de P^1 est Pi(1)
-                exportDistributionRow(n, M_curr, START_ROW_INDEX, EXPORT_FILENAME, 0); // Export n=1 (initialisation du fichier, append_mode=0)
+                exportDistributionRow(n, M_curr, START_ROW_INDEX, EXPORT_FILENAME, 0);
 
-                // --- BOUCLE POUR n=2 à MAX_PLOT_STEPS (ou convergence) ---
                 for (n = 2; n <= MAX_PLOT_STEPS; n++) {
 
-                    // 1. M_prev = P^(n-1) (pour comparaison)
                     copyMatrix(M_prev, M_curr);
-
-                    // 2. Calcul P^n = P^(n-1) * P
                     multiplyMatrices(M_curr, M, M_next);
-
-                    // 3. M_curr devient P^n
                     copyMatrix(M_curr, M_next);
-
-                    // 4. Export des données pour le tracé
                     exportDistributionRow(n, M_curr, START_ROW_INDEX, EXPORT_FILENAME, 1); // Export (append_mode=1)
-
-                    // 5. Calcul de la différence (pour l'analyse de convergence)
                     diff = diffMatrix(M_curr, M_prev);
 
                     if (diff < epsilon) {
                         printf("\n✅ Convergence atteinte (|M^n - M^(n-1)| < %.2f) à n = %d.\n", epsilon, n);
                         printf("Différence |M^n - M^(n-1)| = %.6f\n", diff);
-                        // Affichage de la distribution limite (la ligne de l'état de départ)
                         printf("\n=== Distribution limite approchée (n=%d) ===\n", n);
                         printf("Pi(%d) [Départ État %d]: |", n, START_STATE);
                         for(int j=0; j < G.taille; j++) {
                             printf(" %.4f", M_curr.data[START_ROW_INDEX][j]);
                         }
                         printf(" |\n");
-                        break; // Sortir si convergence atteinte
+                        break;
                     }
                 }
 
@@ -328,7 +287,7 @@ int main() {
                 break;
 
             default:
-                if (choix != -1) { // Évite de réafficher si l'erreur de saisie a déjà affiché un message
+                if (choix != -1) {
                     printf("\n❌ Choix invalide. Réessayez.\n");
                 }
         }

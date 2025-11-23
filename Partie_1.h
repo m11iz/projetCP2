@@ -5,25 +5,25 @@
 #include <stdlib.h>
 
 
-// STRUCTURES
+
 
 
 // cellule : représente une arête du graphe
 typedef struct cellule {
-    int sommet_arrivee;        // numéro du sommet d’arrivée
-    float proba;               // probabilité de passage
-    struct cellule *suiv;      // pointeur vers la cellule suivante
+    int sommet_arrivee;
+    float proba;
+    struct cellule *suiv;
 } cellule;
 
-// liste : ensemble des arêtes sortantes d’un sommet
+
 typedef struct {
-    cellule *head;             // tête de liste
+    cellule *head;
 } liste;
 
 // liste_adjacence
 typedef struct {
-    int taille;                // nombre de sommets
-    liste *tab;                // tableau de listes
+    int taille;
+    liste *tab;
 } liste_adjacence;
 
 
@@ -44,11 +44,9 @@ void verifier_markov(liste_adjacence G);
 // question 4
 void verifier_markov(liste_adjacence G);
 
-// question 5 - export Mermaid
 
-// génération d'un identifiant de sommet de type A, B, AA, AB, etc
 char *getId(int num);
 
-// export du graphe au format Mermaid (.mmd)
+// export du graphe Mermaid
 void generer_fichier_mermaid(liste_adjacence G, const char *filename);
 #endif // PARTIE_1_H

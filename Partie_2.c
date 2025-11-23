@@ -5,7 +5,7 @@
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-// IMPLÉMENTATION UTILS POUR PILE
+
 
 t_pile* creer_pile(int capacite_initiale) {
     t_pile *p = malloc(sizeof(t_pile));
@@ -25,7 +25,6 @@ t_pile* creer_pile(int capacite_initiale) {
 }
 
 void empiler(t_pile *p, int id_sommet) {
-    // Agrandir si nécessaire
     if (p->sommet_pile == p->capacite) {
         p->capacite *= 2;
         p->valeurs = realloc(p->valeurs, p->capacite * sizeof(int));
@@ -60,12 +59,12 @@ void liberer_pile(t_pile *p) {
 
 
 
-// Initialise une classe (vide)
+// Initialise une classe
 t_classe creer_classe(char* nom) {
     t_classe c;
     strncpy(c.nom, nom, 10);
     c.nb_sommets = 0;
-    c.cap_sommets = 10; // Capacité initiale
+    c.cap_sommets = 10;
     c.sommets = malloc(c.cap_sommets * sizeof(int));
     if (!c.sommets) {
         perror("Erreur allocation sommets classe");
@@ -74,7 +73,6 @@ t_classe creer_classe(char* nom) {
     return c;
 }
 
-// Ajoute un sommet à une classe (avec realloc si besoin)
 void ajouter_sommet_classe(t_classe *c, int id_sommet) {
     if (c->nb_sommets == c->cap_sommets) {
         c->cap_sommets *= 2;
@@ -88,11 +86,11 @@ void ajouter_sommet_classe(t_classe *c, int id_sommet) {
     c->nb_sommets++;
 }
 
-// Initialise une partition (vide)
+
 t_partition creer_partition() {
     t_partition p;
     p.nb_classes = 0;
-    p.cap_classes = 10; // Capacité initiale
+    p.cap_classes = 10;
     p.classes = malloc(p.cap_classes * sizeof(t_classe));
     if (!p.classes) {
         perror("Erreur allocation partition");
@@ -101,7 +99,7 @@ t_partition creer_partition() {
     return p;
 }
 
-// Ajoute une classe à la partition (avec realloc si besoin)
+
 void ajouter_classe_partition(t_partition *p, t_classe nouvelle_classe) {
     if (p->nb_classes == p->cap_classes) {
         p->cap_classes *= 2;
@@ -115,7 +113,7 @@ void ajouter_classe_partition(t_partition *p, t_classe nouvelle_classe) {
     p->nb_classes++;
 }
 
-// Affiche la partition (verif Étape 1)
+
 void afficher_partition(t_partition p) {
     printf("\n=== Partition du graphe (Algorithme de Tarjan) ===\n");
     for (int i = 0; i < p.nb_classes; i++) {
@@ -130,13 +128,13 @@ void afficher_partition(t_partition p) {
     }
 }
 
-// Libère la mémoire de la partition et de ses classes
+
 void liberer_partition(t_partition *p) {
     if (p) {
         for (int i = 0; i < p->nb_classes; i++) {
             free(p->classes[i].sommets); // Libère le tableau de sommets de chaque classe
         }
-        free(p->classes); // Libère le tableau de classes
+        free(p->classes);
     }
 }
 
@@ -153,8 +151,8 @@ t_tarjan_vertex* initialiser_tarjan_data(liste_adjacence G) {
     }
 
     for (int i = 0; i < G.taille; i++) {
-        data[i].identifiant = i + 1; // ID 1-indexé
-        data[i].numero = -1;         // Non visité
+        data[i].identifiant = i + 1;
+        data[i].numero = -1;
         data[i].numero_accessible = -1;
         data[i].dans_pile = 0;
     }
@@ -175,28 +173,27 @@ void tarjan_parcours(int u_id, liste_adjacence G, t_tarjan_vertex *data,
     empiler(pile, u_id);
     data[u_idx].dans_pile = 1;
 
-    // 2. Parcourir les voisins 'v' de 'u'
+    // 2. Parcourir les voisins v et u
     cellule *voisin = G.tab[u_idx].head;
     while (voisin != NULL) {
         int v_id = voisin->sommet_arrivee;
         int v_idx = v_id - 1;
 
         if (data[v_idx].numero == -1) {
-            // Cas 1: Voisin 'v' non visité
+            // Voisin v non visité
             tarjan_parcours(v_id, G, data, pile, p_index, partition);
-            // Mise à jour le num_accessible de 'u'
             data[u_idx].numero_accessible = MIN(data[u_idx].numero_accessible, data[v_idx].numero_accessible);
         }
         else if (data[v_idx].dans_pile) {
-            // Cas 2: Voisin 'v' déjà visité ET dans la pile
+            // Voisin v déjà visité ET dans la pile
             data[u_idx].numero_accessible = MIN(data[u_idx].numero_accessible, data[v_idx].numero);
         }
         voisin = voisin->suiv;
     }
 
-    // 3. Vérifier si 'u' est la racine d'une cfc
+    // 3. Vérifier si u est la racine d'une cfc
     if (data[u_idx].numero_accessible == data[u_idx].numero) {
-        // 'u' est une racine. Dépiler jusqu'à 'u' pour former la classe.
+        // u est une racine
         char nom_classe[10];
         sprintf(nom_classe, "C%d", partition->nb_classes + 1);
         t_classe cfc = creer_classe(nom_classe);
@@ -209,7 +206,6 @@ void tarjan_parcours(int u_id, liste_adjacence G, t_tarjan_vertex *data,
             ajouter_sommet_classe(&cfc, w_id);
         } while (w_id != u_id);
 
-        // Ajouter la nouvelle classe à la partition
         ajouter_classe_partition(partition, cfc);
     }
 }
@@ -217,15 +213,12 @@ void tarjan_parcours(int u_id, liste_adjacence G, t_tarjan_vertex *data,
 
 
 t_partition algorithme_tarjan(liste_adjacence G) {
-    // Initialisations
     t_partition partition = creer_partition();
     t_tarjan_vertex *data = initialiser_tarjan_data(G);
     t_pile *pile = creer_pile(G.taille);
-    int index = 0; // Compteur global pour les 'numero'
-
-    // Boucle principale : s'assure qu'on visite tous les sommets
+    int index = 0;
     for (int i = 0; i < G.taille; i++) {
-        if (data[i].numero == -1) { // Si sommet (i+1) non visité
+        if (data[i].numero == -1) {
             tarjan_parcours(i + 1, G, data, pile, &index, &partition);
         }
     }
@@ -237,37 +230,33 @@ t_partition algorithme_tarjan(liste_adjacence G) {
 }
 
 
-//ÉTAPE 2 & 3
+//ÉTAPE 2 et 3
 
 
 int* creer_tableau_appartenance(t_partition partition, int nb_sommets_graphe) {
-    // tab[s] = indice de la classe (0..nb_classes-1) à laquelle appartient le sommet s
-    // On prend un tableau 1..nb_sommets_graphe pour coller à la numérotation des sommets
     int *tab = malloc((nb_sommets_graphe + 1) * sizeof(int));
     if (!tab) {
         perror("Erreur allocation tableau appartenance");
         exit(EXIT_FAILURE);
     }
 
-    // Initialiser à -1 (sécurité)
     for (int i = 0; i <= nb_sommets_graphe; i++) {
         tab[i] = -1;
     }
 
-    // Pour chaque classe de la partition, marquer ses sommets
     for (int c = 0; c < partition.nb_classes; c++) {
         t_classe *classe = &partition.classes[c];
         for (int k = 0; k < classe->nb_sommets; k++) {
-            int s = classe->sommets[k];  // ex : 1, 5, 7
+            int s = classe->sommets[k];
             if (s >= 1 && s <= nb_sommets_graphe) {
-                tab[s] = c;              // le sommet s appartient à la classe d’indice c
+                tab[s] = c;
             }
         }
     }
 
     return tab;
 }
-// petit helper interne : teste si un lien (from,to) existe déjà
+
 static int lien_existe(t_link_array *arr, int from, int to) {
     for (int i = 0; i < arr->log_size; i++) {
         if (arr->links[i].from == from && arr->links[i].to == to) {
@@ -285,7 +274,7 @@ t_link_array* creer_diagramme_hasse(liste_adjacence G, t_partition partition, in
     }
 
     res->log_size = 0;
-    res->phy_size = 8; // capacité initiale
+    res->phy_size = 8;
     res->links = malloc(res->phy_size * sizeof(t_link));
     if (!res->links) {
         perror("Erreur allocation links");
@@ -294,20 +283,18 @@ t_link_array* creer_diagramme_hasse(liste_adjacence G, t_partition partition, in
     }
 
     // Parcourt tous les sommets du graphe
-    // Les sommets sont numérotés 1..G.taille
     for (int s = 1; s <= G.taille; s++) {
-        int Cs = tab_appartenance[s];   // indice de la classe du sommet s
-        if (Cs < 0) continue;          // sécurité
+        int Cs = tab_appartenance[s];
+        if (Cs < 0) continue;
 
-        cellule *voisin = G.tab[s - 1].head; // s-1 car tab[] est 0-indexé
+        cellule *voisin = G.tab[s - 1].head;
         while (voisin != NULL) {
             int t  = voisin->sommet_arrivee;
             int Ct = tab_appartenance[t];
 
             if (Ct >= 0 && Cs != Ct) {
-                // Lien entre la classe Cs et la classe Ct
                 if (!lien_existe(res, Cs, Ct)) {
-                    // Agrandir si besoin
+
                     if (res->log_size == res->phy_size) {
                         res->phy_size *= 2;
                         res->links = realloc(res->links, res->phy_size * sizeof(t_link));
@@ -325,10 +312,6 @@ t_link_array* creer_diagramme_hasse(liste_adjacence G, t_partition partition, in
             voisin = voisin->suiv;
         }
     }
-
-    // Ici on a le graphe des classes.
-    // Si tu veux directement le diagramme de Hasse, tu peux appeler :
-    // removeTransitiveLinks(res);
 
     return res;
 }
@@ -348,11 +331,10 @@ void afficher_diagramme_mermaid(t_partition partition, t_link_array *liens) {
     fprintf(f, "---\n");
     fprintf(f, "flowchart TD\n");
 
-    // 1) Noeuds = classes
+
     for (int c = 0; c < partition.nb_classes; c++) {
         t_classe *classe = &partition.classes[c];
 
-        // Identifiant Mermaid = nom de la classe (ex : C1)
         fprintf(f, "%s[\"%s : {", classe->nom, classe->nom);
         for (int k = 0; k < classe->nb_sommets; k++) {
             fprintf(f, "%d", classe->sommets[k]);
@@ -363,10 +345,9 @@ void afficher_diagramme_mermaid(t_partition partition, t_link_array *liens) {
         fprintf(f, "}\"]\n");
     }
 
-    // 2) Arcs = liens entre classes
     for (int i = 0; i < liens->log_size; i++) {
-        int from = liens->links[i].from; // indice de classe
-        int to   = liens->links[i].to;   // indice de classe
+        int from = liens->links[i].from;
+        int to   = liens->links[i].to;
 
         if (from >= 0 && from < partition.nb_classes &&
             to   >= 0 && to   < partition.nb_classes) {
@@ -393,7 +374,6 @@ void analyser_graphe(t_partition partition, t_link_array *liens) {
         exit(EXIT_FAILURE);
     }
 
-    // Une classe est transitoire si elle a au moins un lien sortant
     for (int i = 0; i < liens->log_size; i++) {
         int from = liens->links[i].from;
         if (from >= 0 && from < nb_classes) {
@@ -420,8 +400,6 @@ void analyser_graphe(t_partition partition, t_link_array *liens) {
         } else {
             printf("persistante\n");
             nb_persistantes++;
-
-            // Classe persistante avec un seul état -> état absorbant
             if (classe->nb_sommets == 1) {
                 printf("   -> L'état %d est absorbant.\n", classe->sommets[0]);
                 nb_absorbants++;
@@ -429,7 +407,6 @@ void analyser_graphe(t_partition partition, t_link_array *liens) {
         }
     }
 
-    // Graphe irréductible ?
     if (nb_classes == 1) {
         printf("\nLe graphe est irréductible (une seule classe).\n");
     } else {

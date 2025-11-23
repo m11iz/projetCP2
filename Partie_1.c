@@ -1,6 +1,7 @@
 #include "Partie_1.h"
 #include <string.h>
 
+// partie de hugo
 // Création d'une cellule
 cellule *creer_cellule(int arrivee, float proba) {
     cellule *c = malloc(sizeof(cellule));
@@ -13,7 +14,7 @@ cellule *creer_cellule(int arrivee, float proba) {
     c->suiv = NULL;
     return c;
 }
-
+// partie Alex
 // Création d'une liste vide
 liste creer_liste_vide(void) {
     liste l;
@@ -41,7 +42,7 @@ void afficher_liste(liste l) {
 
 //QUESTION 3
 
-
+// partie MILO
 // Lecture fichier texte et création de liste d'adjacence
 liste_adjacence readGraph(const char *filename) {
     FILE *file = fopen(filename, "rt");
@@ -90,10 +91,13 @@ liste_adjacence readGraph(const char *filename) {
 
 // QUESTION 4
 
-
+// Partie Hugo
 // Vérification de la propriété de Markov
 void verifier_markov(liste_adjacence G) {
     printf("\n=== Vérification du graphe de Markov ===\n");
+
+    int est_markov = 1;    // on suppose que tout va bien au début
+
     for (int i = 0; i < G.taille; i++) {
         cellule *tmp = G.tab[i].head;
         float somme = 0.0f;
@@ -104,12 +108,20 @@ void verifier_markov(liste_adjacence G) {
             tmp = tmp->suiv;
         }
 
-        // Vérification
-        if (somme < 0.99f || somme > 1.01f)
+
+        if (somme < 0.99f || somme > 1.01f) {
             printf("Sommet %d : somme = %.2f ❌\n", i + 1, somme);
-        else
+            est_markov = 0;   // au moins un problème
+        } else {
             printf("Sommet %d : somme = %.2f ✅\n", i + 1, somme);
+        }
     }
+
+    // Message final
+    if (est_markov)
+        printf("\n  Le graphe est un graphe de Markov.\n");
+    else
+        printf("\n Le graphe n'est PAS un graphe de Markov.\n");
 }
 
 /**
@@ -154,26 +166,7 @@ char *getId(int num) {
 
     return id;
 }
-/**
- * @brief Génère un fichier texte au format Mermaid (.mmd) représentant le graphe.
- *
- * Format compatible avec mermaidchart.com :
- *
- * ---
- * config:
- *   layout: elk
- *   theme: neo
- *   look: neo
- * ---
- * flowchart LR
- * A((1))
- * B((2))
- * A -->|0.50|B
- * ...
- *
- * @param G        Graphe sous forme de liste d'adjacence.
- * @param filename Nom du fichier de sortie (.mmd).
- */
+
 void generer_fichier_mermaid(liste_adjacence G, const char *filename) {
     if (!filename) {
         fprintf(stderr, "Nom de fichier Mermaid invalide.\n");

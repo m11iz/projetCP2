@@ -1,15 +1,8 @@
-//
-// Created by Paul Girault on 13/11/2025.
-//
-
 #include "matrix.h"
-
-#include "matrix.h"
-#include <math.h> // Pour fabsf()
+#include <math.h>
 
 
-// IMPLÉMENTATION - ÉTAPE 1 (MATRICIEL)
-
+// IMPLÉMENTATION - ÉTAPE 1
 
 // Allocation et initialisation à zéro
 t_matrix createEmptyMatrix(int n) {
@@ -23,7 +16,7 @@ t_matrix createEmptyMatrix(int n) {
         exit(EXIT_FAILURE);
     }
 
-    // Allocation des colonnes et initialisation à 0.0f
+    // Allocation des colonnes et initialisation
     for (int i = 0; i < n; i++) {
         m.data[i] = (t_mat_elem*)calloc(n, sizeof(t_mat_elem)); // calloc met à zéro
         if (m.data[i] == NULL) {
@@ -56,10 +49,8 @@ t_matrix createTransitionMatrix(liste_adjacence G) {
     t_matrix M = createEmptyMatrix(n);
 
     for (int i = 0; i < n; i++) {
-        // i est l'indice 0-indexé (sommet i+1)
         cellule *tmp = G.tab[i].head;
         while (tmp != NULL) {
-            // j est l'indice 0-indexé (sommet tmp->sommet_arrivee)
             int j = tmp->sommet_arrivee - 1;
             if (j >= 0 && j < n) {
                 M.data[i][j] = tmp->proba;
@@ -84,7 +75,6 @@ void copyMatrix(t_matrix dest, t_matrix src) {
     }
 }
 
-// Multiplication de deux matrices: C = A * B
 void multiplyMatrices(t_matrix A, t_matrix B, t_matrix C) {
     int n = A.rows;
     if (n != B.rows || n != C.rows) {
@@ -116,7 +106,7 @@ void multiplyMatrices(t_matrix A, t_matrix B, t_matrix C) {
 t_mat_elem diffMatrix(t_matrix M, t_matrix N) {
     if (M.rows != N.rows) {
         fprintf(stderr, "Erreur: Les matrices n'ont pas la même taille pour le calcul de différence.\n");
-        return -1.0f; // Valeur d'erreur
+        return -1.0f;
     }
 
     int n = M.rows;
@@ -160,7 +150,6 @@ t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index) {
     int n_sub = compo.nb_sommets;
     t_matrix sub_m = createEmptyMatrix(n_sub);
 
-    // Mappe les ID de sommets de la classe à leur nouvel indice 0-indexé dans la sous-matrice
 
     int *id_to_sub_index = (int*)malloc((matrix.rows + 1) * sizeof(int));
     if (!id_to_sub_index) {
@@ -172,25 +161,17 @@ t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index) {
     // Initialisation et remplissage du mapping
     for(int i = 0; i < matrix.rows + 1; i++) id_to_sub_index[i] = -1;
     for (int i = 0; i < n_sub; i++) {
-        // compo.sommets[i] est l'ID 1-indexé du sommet
         id_to_sub_index[compo.sommets[i]] = i; // ID_sommet -> Indice_sous-matrice
     }
 
     // Remplissage de la sous-matrice
     for (int i = 0; i < n_sub; i++) {
-        // u_id est l'ID 1-indexé du sommet de départ (ligne)
         int u_id = compo.sommets[i];
-        // u_idx est l'indice 0-indexé dans la matrice originale
         int u_idx = u_id - 1;
 
         for (int j = 0; j < n_sub; j++) {
-            // v_id est l'ID 1-indexé du sommet d'arrivée (colonne)
             int v_id = compo.sommets[j];
-            // v_idx est l'indice 0-indexé dans la matrice originale
             int v_idx = v_id - 1;
-
-            // Le coefficient dans la sous-matrice est le même que dans la matrice originale
-            // pour les sommets appartenant à la classe
             sub_m.data[i][j] = matrix.data[u_idx][v_idx];
         }
     }
