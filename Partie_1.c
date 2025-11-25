@@ -15,21 +15,21 @@ cellule *creer_cellule(int arrivee, float proba) {
     return c;
 }
 // partie Alex
-// Création d'une liste vide
+//  pour chaque sommet
 liste creer_liste_vide(void) {
     liste l;
     l.head = NULL;
     return l;
 }
 
-// Ajout d'une cellule au début de la liste
+// Ajoute une arrete
 void ajouter_cellule(liste *l, int arrivee, float proba) {
     cellule *c = creer_cellule(arrivee, proba);
     c->suiv = l->head;
     l->head = c;
 }
 
-// Affichage d'une liste
+// verif struct pour graphe
 void afficher_liste(liste l) {
     cellule *tmp = l.head;
     printf("[head]");
@@ -96,7 +96,7 @@ liste_adjacence readGraph(const char *filename) {
 void verifier_markov(liste_adjacence G) {
     printf("\n=== Vérification du graphe de Markov ===\n");
 
-    int est_markov = 1;    // on suppose que tout va bien au début
+    int est_markov = 1;
 
     for (int i = 0; i < G.taille; i++) {
         cellule *tmp = G.tab[i].head;
@@ -117,7 +117,7 @@ void verifier_markov(liste_adjacence G) {
         }
     }
 
-    // Message final
+
     if (est_markov)
         printf("\n  Le graphe est un graphe de Markov.\n");
     else
@@ -125,7 +125,7 @@ void verifier_markov(liste_adjacence G) {
 }
 
 
-char *getId(int num) {
+char *getId(int num) { // avant Mermaid
     if (num <= 0) {
         return NULL;
     }
