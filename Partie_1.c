@@ -124,19 +124,7 @@ void verifier_markov(liste_adjacence G) {
         printf("\n Le graphe n'est PAS un graphe de Markov.\n");
 }
 
-/**
- * @brief Génère un identifiant de sommet pour Mermaid à partir d'un numéro.
- *
- * 1  -> "A"
- * 2  -> "B"
- * ...
- * 26 -> "Z"
- * 27 -> "AA"
- * etc.
- *
- * La chaîne retournée est ALLOUÉE dynamiquement : il faut la free()
- * après utilisation.
- */
+
 char *getId(int num) {
     if (num <= 0) {
         return NULL;

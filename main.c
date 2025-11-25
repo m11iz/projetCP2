@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 void exportDistributionRow(int n, t_matrix M_power_n, int start_state_index, const char *filepath, int append_mode) {
-    // Le mode "w" pour le premier appel (écrire l'en-tête), "a" pour les suivants
     FILE *file = fopen(filepath, append_mode ? "a" : "w");
     if (file == NULL) {
         perror("Erreur: impossible d'ouvrir le fichier d'export CSV");
