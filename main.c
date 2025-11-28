@@ -70,11 +70,11 @@ int main() {
         printf("-----------------------------\n");
         printf("Votre choix : ");
 
-        // --- GESTION DE LA SAISIE CORRIGÉE ---
+        // --- GESTION DE LA SAISIE CORRIGÉE (alex)
         if (scanf("%d", &choix) != 1) {
-            // Saisie invalide (ex: une lettre)
+
             printf("\n❌ Entrée invalide. Veuillez entrer un numéro.\n");
-            choix = -1; // Valeur pour forcer le 'default'
+            choix = -1;
 
 
             int c;
@@ -86,7 +86,7 @@ int main() {
 
         switch (choix) {
             case 1: {
-                printf("\nEntrez le chemin du fichier à charger (ex: ../data/meteo.txt) : ");
+                printf("\nEntrez le chemin du fichier à charger (ex: ../data/test.txt) : ");
                 fgets(chemin, sizeof(chemin), stdin);
                 chemin[strcspn(chemin, "\n")] = '\0';
 
