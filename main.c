@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 void exportDistributionRow(int n, t_matrix M_power_n, int start_state_index, const char *filepath, int append_mode) {
-    // Le mode "w" pour le premier appel (écrire l'en-tête), "a" pour les suivants
     FILE *file = fopen(filepath, append_mode ? "a" : "w");
     if (file == NULL) {
         perror("Erreur: impossible d'ouvrir le fichier d'export CSV");
@@ -71,13 +70,13 @@ int main() {
         printf("-----------------------------\n");
         printf("Votre choix : ");
 
-        // --- GESTION DE LA SAISIE CORRIGÉE ---
+        // --- GESTION DE LA SAISIE CORRIGÉE (alex)
         if (scanf("%d", &choix) != 1) {
-            // Saisie invalide (ex: une lettre)
-            printf("\n❌ Entrée invalide. Veuillez entrer un numéro.\n");
-            choix = -1; // Valeur pour forcer le 'default'
 
-            // Vide le buffer d'entrée
+            printf("\n❌ Entrée invalide. Veuillez entrer un numéro.\n");
+            choix = -1;
+
+
             int c;
             while ((c = getchar()) != '\n' && c != EOF);
         } else {
@@ -87,7 +86,7 @@ int main() {
 
         switch (choix) {
             case 1: {
-                printf("\nEntrez le chemin du fichier à charger (ex: ../data/meteo.txt) : ");
+                printf("\nEntrez le chemin du fichier à charger (ex: ../data/test.txt) : ");
                 fgets(chemin, sizeof(chemin), stdin);
                 chemin[strcspn(chemin, "\n")] = '\0';
 
