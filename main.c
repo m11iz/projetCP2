@@ -76,7 +76,7 @@ int main() {
             printf("\n❌ Entrée invalide. Veuillez entrer un numéro.\n");
             choix = -1; // Valeur pour forcer le 'default'
 
-            // Vide le buffer d'entrée
+
             int c;
             while ((c = getchar()) != '\n' && c != EOF);
         } else {

@@ -141,7 +141,7 @@ void liberer_partition(t_partition *p) {
 
 // ÉTAPE 1 (TARJAN)
 
-
+//2.1
 
 t_tarjan_vertex* initialiser_tarjan_data(liste_adjacence G) {
     t_tarjan_vertex* data = malloc(G.taille * sizeof(t_tarjan_vertex));
